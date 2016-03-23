@@ -17,8 +17,4 @@ def Insercion(linea,pulsacion):
     return linea
 
 def FormatElementoPila(elemento):
-
     return
-
-if __name__ == '__main__':
-    main()

@@ -8,154 +8,46 @@
 #
 # Version: 0.1
 
-
 # Al pulsar: .7  <-- esto establece la precisión, en la muestra, a 7 decimales
 # al iniciar, precision: 2
 
 import curses as c
 import lib.standard as libbasic
+import modules.commands as cmd
 
 class Calculadora:
     def __init__(self):
         self.stdscr = c.initscr()
-        self.stdscr.clearok(1)
         c.noecho()
         c.cbreak()
         c.curs_set(0)
-        self.stdscr.keypad(1)
-        self.dimensiones = self.stdscr.getmaxyx()
-        self.linea = ''
-        self.PILA = []
-        # Precisión por defecto
-        self.precision = 2
-        # Alto y ancho de la calculadora
-        self.alto = 27
-        self.ancho = 40
-        # Colores
-        # self.IniciarColores()
-        return
-
-    def Ventana(self):
-        self.posx = (self.dimensiones[1] - self.ancho - 2) / 2
-        self.posy = (self.dimensiones[0] - self.alto - 2) / 2
-        self.win = c.newwin(self.alto,self.ancho,self.posy,self.posx)
-        return
-
-    def Refrescar(self):
         self.stdscr.refresh()
-        self.win.clear()
-        self.win.border(0)
-        self.win.refresh()
+        self.MainWindowCreate()
+        self.STACK = Stack(self.mainwin,2,2,9,self.mwwidth) 
+        self.INPUT = InputWin(self.mainwin,0,6,1,self.mwwidth)
         return
 
-    def Peticion(self):
-        self.Refrescar()
-        self.MostrarPila()
-        self.MostrarLinea()
-        tecla = self.win.getch()
-        while tecla != ord('Q'):
-            self.Accion(tecla)
-            self.Refrescar()
-            self.MostrarLinea()
-            self.MostrarPila()
-            tecla = self.win.getch()
+    def MainWindowCreate(self):
+        # Alto y ancho de la calculadora
+        self.mwheight = 27
+        self.mwwidth = 40
+        self.stdscrsize = self.stdscr.getmaxyx()
+        self.mwxpos = (self.stdscrsize[1] - self.mwwidth - 2) / 2
+        self.mwypos = (self.stdscrsize[0] - self.mwheight - 2) / 2
+        self.mainwin = c.newwin(self.mwheight,self.mwwidth,self.mwypos,self.mwxpos)
         return
 
-    def Accion(self, tecla):
-        if ord('0') <= tecla <= ord('9') or tecla == ord('.'):
-            self.LineaInsertar(chr(tecla))
-        elif tecla == c.KEY_ENTER or tecla == 10:
-            self.PUSHPILA(tecla)
-        elif tecla == c.KEY_RESIZE:
-            self.Refrescar()
-        else:
-            self.Comando(self.PILA,self.linea,tecla)
+    def MainRefresh(self, clean=False):
+        if clean:
+            self.mainwin.clear()
+        self.mainwin.keypad(1)
+        self.mainwin.border(0)
+        self.mainwin.refresh()
         return
 
-    def LineaInsertar(self,tecla):
-        self.linea = libbasic.Insercion(self.linea,tecla)
+    def WaitKey(self):
+        self.mainwin.getch()
         return
-
-    def MostrarLinea(self):
-        posy = self.alto - 2
-        longitud = len(self.linea)-1
-        posx = self.ancho - 2 - longitud
-        self.win.addstr(posy,posx,self.linea)
-        return
-    
-    def MostrarPila(self):
-        # posición del primer elemento
-        posy = self.alto - 3
-        # tamaño máximo de pila
-        tammax = 9
-        cont = 0
-        while cont < tammax:
-            if cont < len(self.PILA):
-                valor = self.PILA[len(self.PILA)-cont-1]
-                valor = self.Formatear(valor)
-                resto = ' ' * (34 - len(str(valor)))
-                cadena = '%s: %s%s' % (cont+1,valor,resto)
-            else:
-                cadena = '%s:%s' %(cont+1,' '*32)
-            self.win.addstr(posy-cont,2,cadena)
-            cont += 1
-        return
-
-    def PUSHPILA(self,elemento):
-        if len(self.linea):
-            self.PILA.append(self.linea)
-            self.linea = ''
-            self.Refrescar()
-        return
-    
-#### OPERACIONES
-    def Suma(self):
-        self.PILA.append(basic.Suma(self.PILA, self.linea))
-        return
-
-    def Resta(self):
-        if len(self.linea):
-            # Si linea tiene decimales
-            if '.' in self.linea:
-                numero = float(self.linea)
-                numero = numero * -1
-                self.linea = str(numero)
-            else:
-                self.linea = str(int(self.linea) * -1)
-        else:
-            if len(self.PILA) > 1:
-                a = float(self.PILA.pop())
-                b = float(self.PILA.pop())
-                self.PILA.append(b-a)
-                self.BorrarLinea()
-        return
-
-    def Multiplica(self):
-        if len(self.linea):
-            a = float(self.linea)
-            self.BorrarLinea()
-            b = float(self.PILA.pop())
-            self.PILA.append(b*a)
-        else:
-            if len(self.PILA) > 1:
-                a = float(self.PILA.pop())
-                b = float(self.PILA.pop())
-                self.PILA.append(b*a)
-                self.BorrarLinea()
-        return
-
-#### FIN OPERACIONES
-
-    def Formatear(self, valor):
-        precision = self.precision
-        valor = round(float(valor),precision)
-        if '.' in str(valor):
-            if int(str(valor).split('.')[1]) == 0:
-                return int(valor)
-            else:
-                return round(float(valor),precision)
-        else:
-            return valor
 
     def Terminar(self):
         c.nocbreak()
@@ -164,11 +56,98 @@ class Calculadora:
         c.endwin()
         exit(0)
 
+class Stack:
+    def __init__(self,parent,ypos,xpos,height,width):
+        self.parentwin = parent
+        self.parentsize = self.parentwin.getmaxyx()
+        self.parentpos = self.parentwin.getbegyx()
+        self.stypos = ypos
+        self.stxpos = xpos
+        self.stheight = height
+        self.stwidth = width
+        self.CreateStack()
+        self.StackRefresh()
+        # Contenido de la pila en stacklines.
+        self.stacklines = []
+        return
+
+    def CreateStack(self):
+        ybeg = self.parentpos[0] + self.parentsize[0] - 3 - self.stypos - self.stheight
+        xbeg = self.parentpos[1] + self.stxpos 
+        height = self.stheight + 2
+        width = self.parentsize[1] - 4
+        self.stackwin = c.newwin(height,width,ybeg,xbeg)
+        return
+
+    def StackRefresh(self, clean=False):
+        if clean:
+            self.stackwin.clear()
+        self.stackwin.keypad(1)
+        self.stackwin.border(0)
+        self.stackwin.refresh()
+        return
+
+    def ShowStack(self):
+        self.StackRefresh(True)
+        counter = 0
+        while counter < self.stheight:
+            if counter < len(self.stacklines):
+                value = str(self.stacklines[len(self.stacklines)-counter-1])
+            else:
+                value = ''
+            ypos = self.stheight - counter
+            xpos = 1
+            linestring = '%d: %s' %(counter+1,value)
+            self.stackwin.addstr(ypos,xpos, linestring)
+            counter += 1
+        self.StackRefresh()
+        return
+
+class InputWin:
+    def __init__(self,parent,ypos,xpos,height,width,status=5):
+        self.parentwin = parent
+        self.parentsize = self.parentwin.getmaxyx()
+        self.parentpos = self.parentwin.getbegyx()
+        self.iwypos = ypos
+        self.iwxpos = xpos
+        self.iwheight = height
+        self.iwwidth = width
+        self.statuswidth = status
+        self.CreateInputWin()
+        self.InputWinRefresh()
+        self.inputline = []
+        return
+
+    def CreateInputWin(self):
+        ybeg = self.parentpos[0] + self.parentsize[0] - 3 - self.iwypos - self.iwheight
+        xbeg = self.parentpos[1] + self.iwxpos + 3 
+        height = self.iwheight + 2
+        width = self.parentsize[1] - 6 - self.statuswidth
+        self.inputwinwin = c.newwin(height,width,ybeg,xbeg)
+        return
+
+    def InputWinRefresh(self, clean=False):
+        if clean:
+            self.inputwinwin.clear()
+        self.inputwinwin.keypad(1)
+        self.inputwinwin.border(0)
+        self.inputwinwin.refresh()
+        return
+
+    def Insert(self, value):
+        self.inputline.append(value)
+        return
+
+def PaintEnvironment(Window):
+    Window.MainRefresh()
+    Window.STACK.StackRefresh()
+    Window.STACK.ShowStack()
+    Window.INPUT.InputWinRefresh()
+
 def main():
     Principal = Calculadora()
-    Principal.Ventana()
-    Principal.Refrescar()
-    Principal.Peticion()
+    PaintEnvironment(Principal)
+    Principal.WaitKey()
     Principal.Terminar()
 
 if __name__ == '__main__':
