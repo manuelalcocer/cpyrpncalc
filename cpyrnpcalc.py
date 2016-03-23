@@ -144,11 +144,16 @@ def PaintEnvironment(Window):
     Window.STACK.ShowStack()
     Window.INPUT.InputWinRefresh()
 
+def InsertMode(Window):
+    pressedkey = Window.WaitKey()
+    Window.Terminar()
+    print pressedkey
+    return
+
 def main():
     Principal = Calculadora()
     PaintEnvironment(Principal)
-    Principal.WaitKey()
-    Principal.Terminar()
+    InsertMode(Principal)
 
 if __name__ == '__main__':
     main()
