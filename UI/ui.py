@@ -97,7 +97,7 @@ class Inputline(Window):
     def __init__(self,parent,height,width,ypos,xpos):
         Window.__init__(self,parent,height,width,ypos,xpos)
         self.linecontent = ''
-        self.algtype = 'int'
+        self.algtype = int
         self.operators = libbasics.Operators().BasicOperators
         return
 
@@ -106,12 +106,12 @@ class Inputline(Window):
             self.linecontent += chr(key)
         elif key == ord('.') and '.' not in self.linecontent:
             self.linecontent += '.'
-            self.algtype = 'float'
+            self.algtype = float
         elif key == 10 or key == 13 or key == c.KEY_ENTER:
             if len(self.linecontent):
                 Stack.PUSH(self.linecontent,self.algtype)
             self.CleanLineContent()            
-            self.algtype = 'int'
+            self.algtype = int
         elif key == c.KEY_BACKSPACE and len(self.linecontent) > 0:
             self.POP()
         elif key == c.KEY_DC:
