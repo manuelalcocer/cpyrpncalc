@@ -123,7 +123,7 @@ class Inputline(Window):
                 FastM.MEM[chr(key)] = libbasics.CreateElement(self.linecontent,self.algtype)
                 FastM.UpdateFastMem()
             elif len(self.linecontent) == 0:
-                self.linecontent == str(FastM.MEM[chr(key)])
+                self.linecontent = str(FastM.MEM[chr(key)])
         return
     
     def POP(self):
