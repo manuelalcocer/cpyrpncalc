@@ -57,7 +57,7 @@ def CreateFastFunctions(parent,yoffset):
     xpos = parent.Pos()[1] + 1
     return ui.FastFunctions(parent,height,width,ypos,xpos)
 
-def InputMode(il,Stack):
+def InputMode(il, Stack, FM):
     pressedkey = None
     while pressedkey != ord('Q'):
         il.ShowContent()
@@ -65,7 +65,7 @@ def InputMode(il,Stack):
             pressedkey = il.WaitKey()
         except (KeyboardInterrupt,SystemExit):
             pressedkey = ord('Q')
-        il.InsertElement(pressedkey,Stack)
+        il.InsertElement(pressedkey,Stack,FM)
     return
 
 def main():
@@ -81,7 +81,7 @@ def main():
     cpySTACK.UpdateStack()
     cpyFastMemory.Refresh()
     cpyFastFunctions.Refresh()
-    InputMode(cpyINPUT,cpySTACK)
+    InputMode(cpyINPUT, cpySTACK, cpyFastMemory)
     stdscr.Terminate()
 
 if __name__ == '__main__':

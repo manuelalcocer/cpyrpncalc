@@ -78,11 +78,9 @@ def CreateElement(enumber, algtype):
         pass
     return element
 
-
 ##############
 # OPERATIONS #
 ##############
-
 def Operation(Stack,Line,operator):
     operator = chr(operator)
     Run(Stack,Line,operator)

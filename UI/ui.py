@@ -60,7 +60,6 @@ class Stack(Window):
         self.StackLines = []
         return
 
-
     def PUSH(self,enumber,algtype):
         self.StackLines += [ libbasics.CreateElement(enumber,algtype) ]
         self.UpdateStack()
@@ -101,7 +100,7 @@ class Inputline(Window):
         self.operators = libbasics.Operators().BasicOperators
         return
 
-    def InsertElement(self,key,Stack):
+    def InsertElement(self,key,Stack,FastM):
         if ord(str(0)) <= key <= ord(str(9)):
             self.linecontent += chr(key)
         elif key == ord('.') and '.' not in self.linecontent:
@@ -115,10 +114,16 @@ class Inputline(Window):
         elif key == c.KEY_BACKSPACE and len(self.linecontent) > 0:
             self.POP()
         elif key == c.KEY_DC:
-            self.linecontent = []
+            self.CleanLineContent()
         elif key in self.operators:
             if len(Stack.StackLines):
                 libbasics.Operation(Stack,self,key)    
+        elif ord('A') <= key <= ord('D'):
+            if len(self.linecontent):
+                FastM.MEM[chr(key)] = libbasics.CreateElement(self.linecontent,self.algtype)
+                FastM.UpdateFastMem()
+            elif len(self.linecontent) == 0:
+                self.linecontent == str(FastM.MEM[chr(key)])
         return
     
     def POP(self):
@@ -143,10 +148,7 @@ class Inputline(Window):
 class FastMemory(Window):
     def __init__(self,parent,height,width,ypos,xpos):
         Window.__init__(self,parent,height,width,ypos,xpos)
-        self.MEM_A = ''
-        self.MEM_B = ''
-        self.MEM_C = ''
-        self.MEM_D = ''
+        self.MEM = {'A' : '', 'B' : '' , 'C' : '', 'D' : ''}
         self.UpdateFastMem()
         return
 
@@ -157,10 +159,10 @@ class FastMemory(Window):
         return
         
     def PrintFastMem(self):
-        self.win.addstr(1,2,'A: %s' %str(self.MEM_A))
-        self.win.addstr(2,2,'B: %s' %str(self.MEM_B))
-        self.win.addstr(3,2,'C: %s' %str(self.MEM_C))
-        self.win.addstr(4,2,'D: %s' %str(self.MEM_D))
+        self.win.addstr(1,2,'A: %s' %str(self.MEM['A']))
+        self.win.addstr(2,2,'B: %s' %str(self.MEM['B']))
+        self.win.addstr(3,2,'C: %s' %str(self.MEM['C']))
+        self.win.addstr(4,2,'D: %s' %str(self.MEM['D']))
         return
 
 class FastFunctions(Window):
