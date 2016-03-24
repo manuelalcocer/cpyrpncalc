@@ -2,7 +2,7 @@
 
 class Operators:
     def __init__(self):
-        operators = [ '+', '-', '*', '/', '^', '%' ]
+        operators = [ '+', '-', '*', '/', '^', '%', 'v', 'V' ]
         self.BasicOperators = [ ord(operator) for operator in operators ]
         return
 
@@ -63,30 +63,58 @@ def CreateElement(enumber, algtype):
 ##############
 
 def Operation(Stack,Line,operator):
-    if operator == ord('+'):
+    operator = chr(operator)
+    if operator == '+':
         # Add operation
-        Sum(Stack,Line)
-    elif operator == '-':
-        # substract operation
+        Run(Stack,Line,operator)
+    elif operator == '-' and len(Line.linecontent) != 0:
+        # substract
+        Run(Stack,Line,operator)
         pass
     elif operator == '*':
         # multiply operation
+        Run(Stack,Line,operator)
         pass
     elif operator == '/':
+        Run(Stack,Line,operator)
         # divide operation
         pass
     elif operator == '%':
         # module operation
+        Run(Stack,Line,operator)
         pass
     elif operator == 'v':
         # sqr operation
+        Run(Stack,Line,operator)
         pass
     elif operator == '^':
         # power operation
+        Run(Stack,Line,operator)
+        pass
+    elif operator == '-' and len(Line.linecontent):
+        # line * -1
+        value = CreateElement(Line.linecontent,Line.algtype)
         pass
     return 
 
-def Sum(Stack,Line):
+def Calc(x,y,op):
+    if op == '+':
+        return x + y
+    elif op == '*':
+        return x * y
+    elif op == '/':
+        if y == 0:
+            return 0
+        else:
+            return y / x
+    elif op == '%':
+        if y == 0:
+            return 0
+        else:
+            return y % x
+    return
+
+def Run(Stack,Line,operator):
     if len(Line.linecontent):
         y = CreateElement(Line.linecontent,Line.algtype)
         Line.CleanLineContent()
@@ -99,6 +127,6 @@ def Sum(Stack,Line):
         newtype = y.type
     elif y.type == x.type and y.type == 'int':
         newtype = y.type
-    value = y.element['value'] + x.element['value']
+    value = Calc(y.element['value'], x.element['value'], operator)
     Stack.PUSH(str(value),newtype)
     return
