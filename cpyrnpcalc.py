@@ -61,7 +61,10 @@ def InputMode(il,Stack):
     pressedkey = None
     while pressedkey != ord('Q'):
         il.ShowContent()
-        pressedkey = il.WaitKey()
+        try:
+            pressedkey = il.WaitKey()
+        except (KeyboardInterrupt,SystemExit):
+            pressedkey = ord('Q')
         il.InsertElement(pressedkey,Stack)
     return
 
