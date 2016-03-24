@@ -35,6 +35,17 @@ class FloatElement:
         value = '%s' %self.element['value']
         return value
 
+class Element(object):
+    def __init__(self,enumber,algtype):
+
+        pass
+
+    def __getattr__(self,name):
+        return self[name]
+
+    def __setattr__(self,value):
+        self[name] = value
+
 #####################
 # END Element Types #
 #####################
