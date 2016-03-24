@@ -8,8 +8,6 @@
 #
 # Version: 0.1
 
-import lib.standard as libbasic
-import modules.commands as cmd
 import UI.ui as ui
 
 def CreateCalc(parent):
@@ -24,9 +22,11 @@ def CreateCalc(parent):
     return ui.Window(parent,height,width,ypos,xpos)
 
 def CreateInputline(parent):
-    height = 3      # 1 línea de entrada
+    height = 1      # 1 línea de entrada
+    height += 2
     width = parent.Dims()[1] - 2 - 5
     ypos = parent.Pos()[0] + parent.Dims()[0] - height - 1
+    height -= 2
     xpos = parent.Pos()[1] + 6
     return ui.Inputline(parent,height,width,ypos,xpos)
 
@@ -35,6 +35,7 @@ def CreateStack(parent,yoffset):
     height += 2
     width = parent.Dims()[1] - 2 
     ypos = yoffset - height 
+    height -= 2
     xpos = parent.Pos()[1] + 1
     return ui.Stack(parent,height,width,ypos,xpos)
 
@@ -43,6 +44,7 @@ def CreateFastMemory(parent,yoffset):
     height += 2
     width = parent.Dims()[1] - 2
     ypos = yoffset - height
+    height -= 2
     xpos = parent.Pos()[1] + 1
     return ui.FastMemory(parent,height,width,ypos,xpos)
 
@@ -51,6 +53,7 @@ def CreateFastFunctions(parent,yoffset):
     height += 2
     width = parent.Dims()[1] - 2
     ypos = yoffset - height
+    height -= 2
     xpos = parent.Pos()[1] + 1
     return ui.FastFunctions(parent,height,width,ypos,xpos)
 
@@ -77,7 +80,6 @@ def main():
     cpyFastFunctions.Refresh()
     InputMode(cpyINPUT,cpySTACK)
     stdscr.Terminate()
-    print cpySTACK.StackLines
 
 if __name__ == '__main__':
     main()
