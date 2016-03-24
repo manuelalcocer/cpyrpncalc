@@ -117,7 +117,8 @@ class Inputline(Window):
         elif key == c.KEY_DC:
             self.linecontent = []
         elif key in self.operators:
-            libbasics.Operation(Stack,self,key)    
+            if len(Stack.StackLines):
+                libbasics.Operation(Stack,self,key)    
         return
     
     def POP(self):
