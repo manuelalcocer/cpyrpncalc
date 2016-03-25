@@ -17,16 +17,17 @@ class INITSCR:
         c.setupterm()
         if c.has_colors():
             c.start_color()
+            c.use_default_colors()
             self.CreatePairs()
         self.stdscr.bkgdset(0,c.color_pair(1))
         self.stdscr.refresh()
         return
 
     def CreatePairs(self):
-        c.init_pair(1,c.COLOR_WHITE,c.COLOR_BLACK)
-        c.init_pair(2,c.COLOR_RED,c.COLOR_BLACK)
-        c.init_pair(3,c.COLOR_BLUE,c.COLOR_BLACK)
-        c.init_pair(4,c.COLOR_CYAN,c.COLOR_BLACK)
+        c.init_pair(1,c.COLOR_WHITE,-1)
+        c.init_pair(2,c.COLOR_RED,-1)
+        c.init_pair(3,c.COLOR_BLUE,-1)
+        c.init_pair(4,c.COLOR_CYAN,-1)
         return
 
     def Dims(self):
@@ -67,6 +68,7 @@ class Window(object):
     def Create(self):
         self.stdscrsize = self.parent.Dims()
         self.win = c.newwin(self.height+2,self.width,self.ypos,self.xpos)
+        self.win.notimeout(1)
         return
     
     def Colors(self,pair):

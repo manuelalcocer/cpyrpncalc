@@ -9,6 +9,8 @@
 # Version: 0.1
 
 import UI.ui as ui
+from curses import ascii
+from os import environ
 
 def CreateMainWindow(parent):
     height = parent.Dims()[0]
@@ -66,12 +68,13 @@ def CreateFastFunctions(parent,yoffset):
 
 def InputMode(il, Stack, FM):
     pressedkey = None
-    while pressedkey != ord('Q'):
+    environ['ESCDELAY'] = '0.1'
+    while pressedkey != ascii.ESC:
         il.ShowContent()
         try:
             pressedkey = il.WaitKey()
         except (KeyboardInterrupt,SystemExit):
-            pressedkey = ord('Q')
+            pressedkey = ascii.ESC
         il.InsertElement(pressedkey,Stack,FM)
     return
 def CreateHeaders(window):
