@@ -52,6 +52,13 @@ class Window(object):
         self.pair = 1
         return
     
+    def CreateInfoHead(self,height):
+        self.win.hline(1,0,c.ACS_HLINE,height)
+        self.win.addstr(0,0,'cpyRPNCalc ver 0.1 - GPL 3.0')
+        Dev = 'by: nashgul <m.alcocer1978@gmail.com>'
+        self.win.addstr(0,height - len(Dev),Dev)
+        return
+
     def SetBackground(self,Back,Pair):
         self.back = True 
         self.pair = Pair
@@ -175,7 +182,7 @@ class Inputline(SubWindow):
         return
     
     def POP(self):
-        templist = [ character for character in self.linecontent ]
+        templist = list(self.linecontent) 
         templist.pop()
         self.linecontent = ''.join(templist)
         return

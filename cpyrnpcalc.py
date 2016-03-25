@@ -11,7 +11,7 @@
 import UI.ui as ui
 
 def CreateMainWindow(parent):
-    height = parent.Dims()[0]-1
+    height = parent.Dims()[0]
     width = parent.Dims()[1]
     ypos = 0
     xpos = 0
@@ -24,7 +24,7 @@ def CreateCalc(parent):
     # Posición respecto a la pantalla principal
     ypheight = parent.Dims()[0]
     xpwidth = parent.Dims()[1]
-    ypos = (ypheight - height) / 2
+    ypos = (ypheight - height - 3) / 2 
     xpos = (xpwidth - width) / 2
     return ui.SubWindow(parent,height,width,ypos,xpos)
 
@@ -74,11 +74,15 @@ def InputMode(il, Stack, FM):
             pressedkey = ord('Q')
         il.InsertElement(pressedkey,Stack,FM)
     return
+def CreateHeaders(window):
+    window.CreateInfoHead(window.Dims()[1])
+    return
 
 def main():
     # Inicia curses y la pantalla principal
     stdscr = ui.INITSCR()
     cpyMainWindow = CreateMainWindow(stdscr)
+    CreateHeaders(cpyMainWindow)
     cpyMainWindow.Refresh()
     cpyMainWindow.SetBackground(True,1)
     cpyRPN = CreateCalc(cpyMainWindow)
