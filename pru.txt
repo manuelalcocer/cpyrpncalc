@@ -1,0 +1,4 @@
+1:.standard.py.swp
+1:trig.pyc
+1:trig.py
+1:standard.py

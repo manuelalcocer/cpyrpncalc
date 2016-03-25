@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from sys import maxint,float_info
+import trig
 
 class Operators:
     def __init__(self):
@@ -33,10 +34,16 @@ class Element:
         return value
 
     def __add__(self, otro):
-        return self.value + otro.value
+        try:
+            return self.value + otro.value
+        except:
+            return self.value
 
     def __sub__(self, otro):
-        return self.value - otro.value
+        try:
+            return self.value - otro.value
+        except:
+            return self.value
 
     def __mod__(self, otro):
         try:
@@ -45,7 +52,10 @@ class Element:
             return float_info.min
 
     def __mul__(self, otro):
-        return self.value * otro.value
+        try:
+            return self.value * otro.value
+        except:
+            return self.value
 
     def __div__(self, otro):
         try:
@@ -54,7 +64,10 @@ class Element:
             return maxint
 
     def __pow__(self, otro):
-        return self.value ** otro.value
+        try:
+            return self.value ** otro.value
+        except:
+            return self.value
 
 #####################
 # END Element Types #

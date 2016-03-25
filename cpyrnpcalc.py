@@ -10,24 +10,31 @@
 
 import UI.ui as ui
 
+def CreateMainWindow(parent):
+    height = parent.Dims()[0]-1
+    width = parent.Dims()[1]
+    ypos = 0
+    xpos = 0
+    return ui.Window(parent,height,width,ypos,xpos, False)
+
 def CreateCalc(parent):
     # Dimensiones de la calculadora
-    height = 29
+    height = 20
     width = 40
     # Posición respecto a la pantalla principal
     ypheight = parent.Dims()[0]
     xpwidth = parent.Dims()[1]
     ypos = (ypheight - height) / 2
     xpos = (xpwidth - width) / 2
-    return ui.Window(parent,height,width,ypos,xpos)
+    return ui.SubWindow(parent,height,width,ypos,xpos)
 
 def CreateInputline(parent):
     height = 1      # 1 línea de entrada
     height += 2
-    width = parent.Dims()[1] - 2 - 5
+    width = parent.Dims()[1] - 2
     ypos = parent.Pos()[0] + parent.Dims()[0] - height - 1
     height -= 2
-    xpos = parent.Pos()[1] + 6
+    xpos = parent.Pos()[1] + 1
     return ui.Inputline(parent,height,width,ypos,xpos)
 
 def CreateStack(parent,yoffset):
@@ -71,16 +78,23 @@ def InputMode(il, Stack, FM):
 def main():
     # Inicia curses y la pantalla principal
     stdscr = ui.INITSCR()
-    cpyRPN = CreateCalc(stdscr)
+    cpyMainWindow = CreateMainWindow(stdscr)
+    cpyMainWindow.Refresh()
+    cpyMainWindow.SetBackground(True,1)
+    cpyRPN = CreateCalc(cpyMainWindow)
+    cpyRPN.Colors(1)
     cpyRPN.Refresh()
     cpyINPUT = CreateInputline(cpyRPN)
-    cpySTACK = CreateStack(cpyRPN,cpyINPUT.Pos()[0])
-    cpyFastMemory = CreateFastMemory(cpyRPN,cpySTACK.Pos()[0])
-    cpyFastFunctions = CreateFastFunctions(cpyRPN,cpyFastMemory.Pos()[0])
+    cpyINPUT.Colors(1)
     cpyINPUT.Refresh()
+    cpySTACK = CreateStack(cpyRPN,cpyINPUT.Pos()[0])
+    cpySTACK.Colors(1)
     cpySTACK.UpdateStack()
+    cpyFastMemory = CreateFastMemory(cpyRPN,cpySTACK.Pos()[0])
+    cpyFastMemory.Colors(2)
     cpyFastMemory.Refresh()
-    cpyFastFunctions.Refresh()
+    #cpyFastFunctions = CreateFastFunctions(cpyRPN,cpyFastMemory.Pos()[0])
+    #cpyFastFunctions.Refresh()
     InputMode(cpyINPUT, cpySTACK, cpyFastMemory)
     stdscr.Terminate()
 
